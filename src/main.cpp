@@ -8,6 +8,8 @@ const int brakeLED = 4; //MOSFET gate connected to pin D4
 Adafruit_MPU6050 mpu;
 Adafruit_Sensor *mpu_accel;
 int mpu_rdy = 0;
+
+//offsets in m/s^2 determined thru sensor observation using adafruit MPU6050 library. 
 float offsetx = -0.17;
 float offsety = 0.1;
 float offsetz = -1.25;
@@ -22,7 +24,7 @@ void setup()
 {
   pinMode(brakeLED, OUTPUT);
   //initialization of accelerometer
-  if (mpu.begin())
+  if (mpu.begin()) //will flash rapidly on success
   {
     mpu.setAccelerometerRange(MPU6050_RANGE_2_G);
     mpu.setGyroRange(MPU6050_RANGE_500_DEG);
@@ -47,7 +49,7 @@ void setup()
 
   //initializing pin modes
 
-  if (!mpu_rdy)
+  if (!mpu_rdy) // will flash slowly on failure. Brake light still functions, but emergency stop signal disabled. 
   {
     digitalWrite(brakeLED, HIGH);
     delay(500);
