@@ -7,7 +7,7 @@ const int brakeLED = 4; //MOSFET gate connected to pin D4
 
 Adafruit_MPU6050 mpu;
 Adafruit_Sensor *mpu_accel;
-int mpu_rdy = 0;
+int mpu_rdy = 0;  //emergency stop signal disabled by default
 
 //offsets in m/s^2 determined thru sensor observation using adafruit MPU6050 library. 
 float offsetx = -0.17;
@@ -31,8 +31,7 @@ void setup()
     mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
 
     mpu_accel = mpu.getAccelerometerSensor();
-    mpu_accel->printSensorDetails();
-    mpu_rdy = 1;
+    mpu_rdy = 1;  //enables emergency stop signal
 
     digitalWrite(brakeLED, HIGH);
     delay(100);
