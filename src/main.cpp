@@ -8,6 +8,9 @@ const int brakeLED = 4; //MOSFET gate connected to pin D4
 Adafruit_MPU6050 mpu;
 Adafruit_Sensor *mpu_accel;
 int mpu_rdy = 0;
+float offsetx = -0.17;
+float offsety = 0.1;
+float offsetz = -1.25;
 
 //variables for flashing intervals to avoid using delay()
 int ledState = LOW;
@@ -74,9 +77,9 @@ Code must be adjusted for different mounting orientations!
   if (mpu_rdy)
   { //flashing only executed if mpu works
     mpu_accel->getEvent(&accel); //continuously read current acceleleration
-    if (accel.acceleration.z >= 5 || accel.acceleration.z <= -5)
+    if (accel.acceleration.z + offsetz >= 5 || accel.acceleration.z + offsetz <= -5)
     { //flashing begins if acceleration exceeds 5m/s^2 and cuntinues until it fall below 2 m/s^2
-      while (accel.acceleration.z >= 2 || accel.acceleration.z <= -2)
+      while (accel.acceleration.z + offsetz >= 2 || accel.acceleration.z + offsetz <= -2)
       {
         mpu_accel->getEvent(&accel); //continuously read current acceleleration
         unsigned long currentMillis = millis();
