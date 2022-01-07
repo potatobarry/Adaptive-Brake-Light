@@ -7,23 +7,24 @@ const int brakeLED = 4; //MOSFET gate connected to pin D4
 
 Adafruit_MPU6050 mpu;
 Adafruit_Sensor *mpu_accel;
-int mpu_rdy = 0;  //emergency stop signal disabled by default
+int mpu_rdy = 0; //emergency stop signal disabled by default
 
-//offsets in m/s^2 determined thru sensor observation using adafruit MPU6050 library. 
-float offsetx = -0.17;
-float offsety = 0.1;
-float offsetz = -1.25;
+//offsets in m/s^2 determined thru sensor observation using adafruit MPU6050 library.
+float offsetx = -0.26;
+float offsety = -0.27;
+float offsetz = 0.81;
 
 //variables for flashing intervals to avoid using delay()
 int ledState = LOW;
 unsigned long previousMillis = 0; //stores previous update time
-const int interval = 100;        //stores flashing interval; convert to Hz with 1000/(2*interval)
+const int interval = 100;         //stores flashing interval; convert to Hz with 1000/(2*interval)
                                   //100ms interval for 5 Hz is used; according to ECE regulations flashing must be at 4+-1Hz
 
 void setup()
 {
   pinMode(brakeLED, OUTPUT);
   //initialization of accelerometer
+
   if (mpu.begin()) //will flash rapidly on success
   {
     mpu.setAccelerometerRange(MPU6050_RANGE_2_G);
@@ -31,7 +32,7 @@ void setup()
     mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
 
     mpu_accel = mpu.getAccelerometerSensor();
-    mpu_rdy = 1;  //enables emergency stop signal
+    mpu_rdy = 1; //enables emergency stop signal
 
     digitalWrite(brakeLED, HIGH);
     delay(100);
@@ -48,7 +49,7 @@ void setup()
 
   //initializing pin modes
 
-  if (!mpu_rdy) // will flash slowly on failure. Brake light still functions, but emergency stop signal disabled. 
+  if (!mpu_rdy) // will flash slowly on failure. Brake light still functions, but emergency stop signal disabled.
   {
     digitalWrite(brakeLED, HIGH);
     delay(500);
@@ -77,12 +78,11 @@ Code must be adjusted for different mounting orientations!
   sensors_event_t accel;
   if (mpu_rdy)
   { //flashing only executed if mpu works
-    mpu_accel->getEvent(&accel); //continuously read current acceleleration
-    if (accel.acceleration.z + offsetz >= 5 || accel.acceleration.z + offsetz <= -5)
+
+    if (getaccel() >= 5 || getaccel() <= -5)
     { //flashing begins if acceleration exceeds 5m/s^2 and cuntinues until it fall below 2 m/s^2
-      while (accel.acceleration.z + offsetz >= 2 || accel.acceleration.z + offsetz <= -2)
+      while (getaccel() >= 2 || getaccel() <= -2)
       {
-        mpu_accel->getEvent(&accel); //continuously read current acceleleration
         unsigned long currentMillis = millis();
 
         if (currentMillis - previousMillis >= interval) //could break from rollover after 50 days
@@ -104,4 +104,16 @@ Code must be adjusted for different mounting orientations!
       }
     }
   }
+}
+
+float getaccel() //creates average of last 4 accelerations to even out noise
+{
+  sensors_event_t accel;
+  float sum = 0;
+  for (int i = 0; i < 4; i++)
+  {
+    mpu_accel->getEvent(&accel);
+    sum += accel.acceleration.z + offsetz;
+  }
+  return sum / 4;
 }
