@@ -64,6 +64,17 @@ void setup()
     digitalWrite(brakeLED, LOW);
   }
 }
+float getaccel() //creates average of last 4 accelerations to even out noise
+{
+  sensors_event_t accel;
+  float sum = 0;
+  for (int i = 0; i < 4; i++)
+  {
+    mpu_accel->getEvent(&accel);
+    sum += accel.acceleration.z + offsetz;
+  }
+  return sum / 4;
+}
 
 void loop()
 { /*
@@ -104,16 +115,4 @@ Code must be adjusted for different mounting orientations!
       }
     }
   }
-}
-
-float getaccel() //creates average of last 4 accelerations to even out noise
-{
-  sensors_event_t accel;
-  float sum = 0;
-  for (int i = 0; i < 4; i++)
-  {
-    mpu_accel->getEvent(&accel);
-    sum += accel.acceleration.z + offsetz;
-  }
-  return sum / 4;
 }
