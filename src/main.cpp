@@ -86,7 +86,7 @@ Code must be adjusted for different mounting orientations!
 
   digitalWrite(brakeLED, HIGH); //ensures brake light is always on if not flashing and brakes applied
   ledState = HIGH;
-  sensors_event_t accel;
+
   if (mpu_rdy)
   { //flashing only executed if mpu works
 
