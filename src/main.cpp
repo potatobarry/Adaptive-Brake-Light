@@ -90,9 +90,9 @@ Code must be adjusted for different mounting orientations!
   if (mpu_rdy)
   { //flashing only executed if mpu works
 
-    if (getaccel() >= 5 || getaccel() <= -5)
-    { //flashing begins if acceleration exceeds 5m/s^2 and cuntinues until it fall below 2 m/s^2
-      while (getaccel() >= 2 || getaccel() <= -2)
+    if (getaccel() >= 7 || getaccel() <= -7)
+    { //flashing begins if acceleration exceeds 7m/s^2 and cuntinues until it falls below 4 m/s^2
+      while (getaccel() >= 4 || getaccel() <= -4)
       {
         unsigned long currentMillis = millis();
 
